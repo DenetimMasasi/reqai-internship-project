@@ -19,6 +19,8 @@ Base API path:
 /api
 ```
 
+In the first version of ReqAI, one uploaded document represents one analysis. Therefore, `documentId` is used as the main identifier throughout the API.
+
 ---
 
 ## 2. Planned API Endpoints
@@ -29,32 +31,32 @@ Base API path:
 | `POST` | `/api/documents/upload` | Upload a TXT requirement document |
 | `POST` | `/api/documents/{documentId}/analyze` | Start analysis for an uploaded document |
 | `GET` | `/api/analyses` | List previous analyses |
-| `GET` | `/api/analyses/{analysisId}` | View one complete analysis |
+| `GET` | `/api/analyses/{documentId}` | View the complete analysis of a document |
 | `POST` | `/api/mock-ai/analyze` | Directly test the Mock AI service |
 
 ---
 
-# 3. Health Check
+## 3. Health Check
 
-## Endpoint
+### Endpoint
 
 ```http
 GET /api/health
 ```
 
-## Purpose
+### Purpose
 
 Checks whether the Spring Boot backend is running.
 
-## Successful Response
+### Successful Response
 
-### Status
+#### Status
 
 ```text
 200 OK
 ```
 
-### Body
+#### Body
 
 ```json
 {
@@ -65,21 +67,21 @@ Checks whether the Spring Boot backend is running.
 
 ---
 
-# 4. Upload Requirement Document
+## 4. Upload Requirement Document
 
-## Endpoint
+### Endpoint
 
 ```http
 POST /api/documents/upload
 ```
 
-## Content Type
+### Content Type
 
 ```text
 multipart/form-data
 ```
 
-## Purpose
+### Purpose
 
 Uploads a customer requirement document in TXT format.
 
@@ -92,21 +94,21 @@ The backend will:
 5. Store the uploaded document.
 6. Set the document status to `UPLOADED`.
 
-## Request
+### Request
 
 | Field | Type | Required | Description |
 |---|---|---:|---|
 | `file` | File | Yes | TXT requirement document |
 
-## Successful Response
+### Successful Response
 
-### Status
+#### Status
 
 ```text
 201 Created
 ```
 
-### Body
+#### Body
 
 ```json
 {
@@ -117,9 +119,9 @@ The backend will:
 }
 ```
 
-## Possible Errors
+### Possible Errors
 
-### No file provided
+#### No File Provided
 
 ```text
 400 Bad Request
@@ -127,6 +129,7 @@ The backend will:
 
 ```json
 {
+  "timestamp": "2026-07-13T17:29:00Z",
   "status": 400,
   "error": "Bad Request",
   "message": "A requirement document must be provided.",
@@ -134,7 +137,7 @@ The backend will:
 }
 ```
 
-### Unsupported file type
+#### Unsupported File Type
 
 ```text
 400 Bad Request
@@ -142,6 +145,7 @@ The backend will:
 
 ```json
 {
+  "timestamp": "2026-07-13T17:29:00Z",
   "status": 400,
   "error": "Bad Request",
   "message": "Only TXT files are supported.",
@@ -149,7 +153,7 @@ The backend will:
 }
 ```
 
-### Empty document
+#### Empty Document
 
 ```text
 400 Bad Request
@@ -157,6 +161,7 @@ The backend will:
 
 ```json
 {
+  "timestamp": "2026-07-13T17:29:00Z",
   "status": 400,
   "error": "Bad Request",
   "message": "The uploaded document is empty.",
@@ -166,15 +171,15 @@ The backend will:
 
 ---
 
-# 5. Start Document Analysis
+## 5. Start Document Analysis
 
-## Endpoint
+### Endpoint
 
 ```http
 POST /api/documents/{documentId}/analyze
 ```
 
-## Purpose
+### Purpose
 
 Starts the analysis process for an uploaded requirement document.
 
@@ -185,16 +190,18 @@ The backend will:
 3. Send its content to the AI or Mock AI provider.
 4. Receive structured requirements, tasks and test scenarios.
 5. Store the generated results.
-6. Change the status to `COMPLETED`.
+6. Change the document status to `COMPLETED`.
 7. Return an analysis summary.
 
-## Path Parameter
+If the analysis fails, the document status will be changed to `FAILED`.
+
+### Path Parameter
 
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
 | `documentId` | Long | Yes | ID of the uploaded document |
 
-## Example Request
+### Example Request
 
 ```http
 POST /api/documents/1/analyze
@@ -202,19 +209,18 @@ POST /api/documents/1/analyze
 
 No request body is required.
 
-## Successful Response
+### Successful Response
 
-### Status
+#### Status
 
 ```text
 200 OK
 ```
 
-### Body
+#### Body
 
 ```json
 {
-  "analysisId": 1,
   "documentId": 1,
   "fileName": "customer-self-service-portal.txt",
   "status": "COMPLETED",
@@ -225,9 +231,9 @@ No request body is required.
 }
 ```
 
-## Possible Errors
+### Possible Errors
 
-### Document not found
+#### Document Not Found
 
 ```text
 404 Not Found
@@ -235,6 +241,7 @@ No request body is required.
 
 ```json
 {
+  "timestamp": "2026-07-13T17:31:00Z",
   "status": 404,
   "error": "Not Found",
   "message": "Document with ID 1 was not found.",
@@ -242,7 +249,7 @@ No request body is required.
 }
 ```
 
-### Document is already being processed
+#### Document Is Already Being Processed
 
 ```text
 409 Conflict
@@ -250,6 +257,7 @@ No request body is required.
 
 ```json
 {
+  "timestamp": "2026-07-13T17:31:00Z",
   "status": 409,
   "error": "Conflict",
   "message": "The document is already being analyzed.",
@@ -257,7 +265,23 @@ No request body is required.
 }
 ```
 
-### AI analysis failure
+#### Document Has Already Been Analyzed
+
+```text
+409 Conflict
+```
+
+```json
+{
+  "timestamp": "2026-07-13T17:31:00Z",
+  "status": 409,
+  "error": "Conflict",
+  "message": "The document has already been analyzed.",
+  "path": "/api/documents/1/analyze"
+}
+```
+
+#### AI Analysis Failure
 
 ```text
 502 Bad Gateway
@@ -265,6 +289,7 @@ No request body is required.
 
 ```json
 {
+  "timestamp": "2026-07-13T17:31:00Z",
   "status": 502,
   "error": "AI Analysis Failed",
   "message": "The document could not be analyzed.",
@@ -274,49 +299,48 @@ No request body is required.
 
 ---
 
-# 6. List Analysis History
+## 6. List Analysis History
 
-## Endpoint
+### Endpoint
 
 ```http
 GET /api/analyses
 ```
 
-## Purpose
+### Purpose
 
-Returns previously uploaded and analyzed documents.
+Returns previously uploaded documents together with their analysis statuses.
 
 Results should be ordered from newest to oldest.
 
-## Optional Query Parameters
+### Optional Query Parameters
 
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
-| `page` | Integer | No | Page number, starting from 0 |
+| `page` | Integer | No | Page number, starting from `0` |
 | `size` | Integer | No | Number of records per page |
-| `status` | String | No | Filter by analysis status |
+| `status` | String | No | Filter by document analysis status |
 
-## Example Request
+### Example Request
 
 ```http
 GET /api/analyses?page=0&size=10
 ```
 
-## Successful Response
+### Successful Response
 
-### Status
+#### Status
 
 ```text
 200 OK
 ```
 
-### Body
+#### Body
 
 ```json
 {
   "content": [
     {
-      "analysisId": 2,
       "documentId": 2,
       "fileName": "customer-self-service-portal.txt",
       "status": "COMPLETED",
@@ -325,7 +349,6 @@ GET /api/analyses?page=0&size=10
       "analyzedAt": "2026-07-13T17:32:00Z"
     },
     {
-      "analysisId": 1,
       "documentId": 1,
       "fileName": "sample-requirements.txt",
       "status": "FAILED",
@@ -341,45 +364,58 @@ GET /api/analyses?page=0&size=10
 }
 ```
 
----
+### Empty History Response
 
-# 7. View Analysis Details
+If no documents have been uploaded yet, the endpoint still returns `200 OK`.
 
-## Endpoint
-
-```http
-GET /api/analyses/{analysisId}
+```json
+{
+  "content": [],
+  "page": 0,
+  "size": 10,
+  "totalElements": 0,
+  "totalPages": 0
+}
 ```
 
-## Purpose
+---
 
-Returns the complete structured result of a selected analysis.
+## 7. View Analysis Details
 
-## Path Parameter
+### Endpoint
+
+```http
+GET /api/analyses/{documentId}
+```
+
+### Purpose
+
+Returns the complete structured analysis result of a selected document.
+
+### Path Parameter
 
 | Parameter | Type | Required | Description |
 |---|---|---:|---|
-| `analysisId` | Long | Yes | ID of the requested analysis |
+| `documentId` | Long | Yes | ID of the document whose analysis will be returned |
 
-## Example Request
+### Example Request
 
 ```http
 GET /api/analyses/1
 ```
 
-## Successful Response
+### Successful Response
 
-### Status
+#### Status
 
 ```text
 200 OK
 ```
 
-### Body
+#### Body
 
 ```json
 {
-  "analysisId": 1,
   "documentId": 1,
   "fileName": "customer-self-service-portal.txt",
   "status": "COMPLETED",
@@ -401,13 +437,13 @@ GET /api/analyses/1
           "testScenarios": [
             {
               "id": 1,
-              "title": "Successful login",
+              "title": "Successful Login",
               "expectedResult": "The user logs in with valid credentials."
             },
             {
               "id": 2,
-              "title": "Invalid password",
-              "expectedResult": "The system displays a meaningful error."
+              "title": "Invalid Password",
+              "expectedResult": "The system displays a meaningful error message."
             }
           ]
         }
@@ -417,7 +453,9 @@ GET /api/analyses/1
 }
 ```
 
-## Possible Error
+### Possible Errors
+
+#### Document Not Found
 
 ```text
 404 Not Found
@@ -425,36 +463,59 @@ GET /api/analyses/1
 
 ```json
 {
+  "timestamp": "2026-07-13T17:35:00Z",
   "status": 404,
   "error": "Not Found",
-  "message": "Analysis with ID 1 was not found.",
+  "message": "Document with ID 1 was not found.",
+  "path": "/api/analyses/1"
+}
+```
+
+#### Analysis Has Not Been Completed
+
+```text
+409 Conflict
+```
+
+```json
+{
+  "timestamp": "2026-07-13T17:35:00Z",
+  "status": 409,
+  "error": "Conflict",
+  "message": "The document analysis has not been completed.",
   "path": "/api/analyses/1"
 }
 ```
 
 ---
 
-# 8. Mock AI Test Endpoint
+## 8. Mock AI Test Endpoint
 
-## Endpoint
+### Endpoint
 
 ```http
 POST /api/mock-ai/analyze
 ```
 
-## Purpose
+### Content Type
+
+```text
+application/json
+```
+
+### Purpose
 
 Tests the Mock AI module directly without uploading or storing a document.
 
-This endpoint is intended for development and demonstration.
+This endpoint is intended for development, testing and demonstration purposes.
 
 The normal application workflow should use:
 
-```text
+```http
 POST /api/documents/{documentId}/analyze
 ```
 
-## Request
+### Request
 
 ```json
 {
@@ -462,7 +523,15 @@ POST /api/documents/{documentId}/analyze
 }
 ```
 
-## Successful Response
+### Successful Response
+
+#### Status
+
+```text
+200 OK
+```
+
+#### Body
 
 ```json
 {
@@ -479,7 +548,7 @@ POST /api/documents/{documentId}/analyze
           "status": "NEW",
           "testScenarios": [
             {
-              "title": "Successful login",
+              "title": "Successful Login",
               "expectedResult": "The user logs in with valid credentials."
             }
           ]
@@ -490,25 +559,43 @@ POST /api/documents/{documentId}/analyze
 }
 ```
 
+### Possible Error
+
+#### Empty Content
+
+```text
+400 Bad Request
+```
+
+```json
+{
+  "timestamp": "2026-07-13T17:35:00Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Document content must not be empty.",
+  "path": "/api/mock-ai/analyze"
+}
+```
+
 ---
 
-# 9. HTTP Status Codes
+## 9. HTTP Status Codes
 
 | Status Code | Meaning | Example |
 |---:|---|---|
-| `200` | Request completed successfully | Analysis completed |
+| `200` | Request completed successfully | Analysis completed or data retrieved |
 | `201` | Resource created successfully | Document uploaded |
-| `400` | Request validation failed | Invalid TXT file |
+| `400` | Request validation failed | Invalid or empty TXT file |
 | `404` | Requested resource was not found | Missing document |
-| `409` | Request conflicts with current state | Analysis already running |
+| `409` | Request conflicts with the current document state | Analysis already running or completed |
 | `500` | Unexpected backend error | Database or server failure |
 | `502` | External AI provider failed | AI analysis error |
 
 ---
 
-# 10. Standard Error Response
+## 10. Standard Error Response
 
-All backend errors should use a consistent structure.
+All backend errors should use a consistent response structure.
 
 ```json
 {
@@ -520,31 +607,59 @@ All backend errors should use a consistent structure.
 }
 ```
 
-Planned error response fields:
+### Error Response Fields
 
 | Field | Type | Description |
 |---|---|---|
-| `timestamp` | Date and time | Time of the error |
+| `timestamp` | Date and time | Time when the error occurred |
 | `status` | Integer | HTTP status code |
 | `error` | String | Error category |
-| `message` | String | Meaningful user-facing message |
-| `path` | String | Requested endpoint |
+| `message` | String | Meaningful user-facing error message |
+| `path` | String | Requested API endpoint |
+
+The backend should not expose internal stack traces or sensitive technical information to the frontend.
 
 ---
 
-# 11. API Implementation Schedule
+## 11. Document Status Values
 
-## Week 1
+The following values will represent the state of an uploaded document:
+
+| Status | Description |
+|---|---|
+| `UPLOADED` | The document was uploaded but analysis has not started |
+| `PROCESSING` | The document is currently being analyzed |
+| `COMPLETED` | Analysis completed successfully |
+| `FAILED` | Analysis could not be completed |
+
+### Status Flow
+
+```text
+UPLOADED
+    ↓
+PROCESSING
+   ↙   ↘
+COMPLETED FAILED
+```
+
+---
+
+## 12. API Implementation Schedule
+
+### Week 1
 
 - Design API endpoints
+- Define request and response structures
+- Define standard error responses
 - Add Swagger/OpenAPI support
 - Display the health endpoint in Swagger
 
-## Week 2
+### Week 2
 
 - Implement document upload
 - Implement analysis execution
-- Integrate Mock AI
-- Store results in PostgreSQL
+- Integrate the Mock AI service
+- Store generated results in PostgreSQL
 - Implement history and detail endpoints
-- Test APIs through Swagger
+- Implement centralized error handling
+- Test all APIs through Swagger
