@@ -15,7 +15,7 @@ import {
 })
 export class ApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = '/api';
 
   uploadDocument(file: File): Observable<DocumentUploadResponse> {
     const formData = new FormData();

@@ -1,0 +1,98 @@
+<section class="upload-page">
+  <div class="page-heading">
+    <span class="eyebrow">ReqAI</span>
+    <h1>Requirement Analysis</h1>
+    <p>
+      Upload a customer requirement document and generate business
+      requirements, development tasks and test scenarios.
+    </p>
+  </div>
+
+  <div class="upload-card">
+    <label class="file-label" for="document-file">
+      Requirement document
+    </label>
+
+    <input
+      id="document-file"
+      type="file"
+      accept=".txt,text/plain"
+      (change)="onFileSelected($event)"
+    />
+
+    @if (selectedFile) {
+      <div class="selected-file">
+        <strong>{{ selectedFile.name }}</strong>
+        <span>{{ selectedFile.size }} bytes</span>
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="message error-message">
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (!uploadResponse) {
+      <button
+        type="button"
+        class="primary-button"
+        [disabled]="!selectedFile || isUploading"
+        (click)="uploadDocument()"
+      >
+        {{ isUploading ? 'Uploading...' : 'Upload Document' }}
+      </button>
+    }
+
+    @if (uploadResponse) {
+      <div class="message success-message">
+        <strong>Document uploaded successfully.</strong>
+        <span>Document ID: {{ uploadResponse.documentId }}</span>
+        <span>Status: {{ uploadResponse.status }}</span>
+      </div>
+
+      @if (!analysisSummary) {
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="isAnalyzing"
+          (click)="analyzeDocument()"
+        >
+          {{ isAnalyzing ? 'Analyzing...' : 'Analyze Document' }}
+        </button>
+      }
+    }
+  </div>
+
+  @if (analysisSummary) {
+    <div class="result-card">
+      <div class="result-heading">
+        <div>
+          <span class="eyebrow">Analysis completed</span>
+          <h2>{{ analysisSummary.fileName }}</h2>
+        </div>
+
+        <span class="status-badge">
+          {{ analysisSummary.status }}
+        </span>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <strong>{{ analysisSummary.requirementCount }}</strong>
+          <span>Requirements</span>
+        </div>
+
+        <div class="summary-item">
+          <strong>{{ analysisSummary.taskCount }}</strong>
+          <span>Development Tasks</span>
+        </div>
+
+        <div class="summary-item">
+          <strong>{{ analysisSummary.testScenarioCount }}</strong>
+          <span>Test Scenarios</span>
+        </div>
+      </div>
+    </div>
+  }
+</section>

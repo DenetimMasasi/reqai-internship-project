@@ -1,3 +1,15 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { UploadPage } from './pages/upload/upload';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: UploadPage,
+    title: 'ReqAI - Upload'
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
+];
