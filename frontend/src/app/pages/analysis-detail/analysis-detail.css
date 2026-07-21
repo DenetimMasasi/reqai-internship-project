@@ -1,0 +1,147 @@
+.detail-page {
+  width: min(1100px, calc(100% - 32px));
+  margin: 40px auto;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #4f46e5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.page-heading {
+  margin-bottom: 28px;
+}
+
+.page-heading h1 {
+  margin: 8px 0 14px;
+}
+
+.eyebrow,
+.requirement-label {
+  color: #4f46e5;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.document-info,
+.requirement-heading,
+.task-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.status-badge,
+.task-status {
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.requirement-card {
+  padding: 26px;
+  border: 1px solid #e1e4e8;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 8px 28px rgba(20, 25, 40, 0.05);
+}
+
+.requirement-card h2 {
+  margin: 7px 0 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: #eef0ff;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.description {
+  margin: 18px 0;
+  color: #606774;
+  line-height: 1.6;
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-card {
+  padding: 20px;
+  border-radius: 10px;
+  background: #f7f8fa;
+}
+
+.task-card h3 {
+  margin: 0;
+}
+
+.task-card p {
+  color: #606774;
+  line-height: 1.5;
+}
+
+.test-scenarios h4 {
+  margin: 18px 0 10px;
+}
+
+.scenario-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+  margin-top: 8px;
+  border-left: 4px solid #4f46e5;
+  border-radius: 6px;
+  background: white;
+}
+
+.scenario-card span {
+  color: #606774;
+}
+
+.state-card {
+  padding: 20px;
+  border-radius: 10px;
+  background: white;
+}
+
+.error-message {
+  color: #b42318;
+  background: #fff0f0;
+}
+
+@media (max-width: 700px) {
+  .document-info,
+  .requirement-heading,
+  .task-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

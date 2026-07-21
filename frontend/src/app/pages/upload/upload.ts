@@ -12,9 +12,11 @@ import {
 } from '../../models/api.models';
 import { ApiService } from '../../services/api.service';
 
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-upload-page',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './upload.html',
   styleUrl: './upload.css'
 })

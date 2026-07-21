@@ -1,0 +1,89 @@
+<section class="detail-page">
+  <a class="back-link" routerLink="/">
+    ← Back to upload
+  </a>
+
+  @if (isLoading) {
+    <div class="state-card">
+      Loading analysis...
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error-message">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (analysis) {
+    <div class="page-heading">
+      <span class="eyebrow">Analysis result</span>
+      <h1>{{ analysis.fileName }}</h1>
+
+      <div class="document-info">
+        <span>Document ID: {{ analysis.documentId }}</span>
+        <span class="status-badge">{{ analysis.status }}</span>
+      </div>
+    </div>
+
+    <div class="requirements">
+      @for (
+        requirement of analysis.requirements;
+        track requirement.id
+      ) {
+        <article class="requirement-card">
+          <div class="requirement-heading">
+            <div>
+              <span class="requirement-label">
+                Business Requirement
+              </span>
+
+              <h2>{{ requirement.title }}</h2>
+            </div>
+
+            <div class="badges">
+              <span class="badge">
+                Priority: {{ requirement.priority }}
+              </span>
+
+              <span class="badge">
+                Complexity: {{ requirement.complexity }}
+              </span>
+            </div>
+          </div>
+
+          <p class="description">
+            {{ requirement.description }}
+          </p>
+
+          <div class="tasks">
+            @for (task of requirement.tasks; track task.id) {
+              <section class="task-card">
+                <div class="task-heading">
+                  <h3>{{ task.title }}</h3>
+                  <span class="task-status">{{ task.status }}</span>
+                </div>
+
+                <p>{{ task.description }}</p>
+
+                <div class="test-scenarios">
+                  <h4>Test Scenarios</h4>
+
+                  @for (
+                    scenario of task.testScenarios;
+                    track scenario.id
+                  ) {
+                    <div class="scenario-card">
+                      <strong>{{ scenario.title }}</strong>
+                      <span>{{ scenario.expectedResult }}</span>
+                    </div>
+                  }
+                </div>
+              </section>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

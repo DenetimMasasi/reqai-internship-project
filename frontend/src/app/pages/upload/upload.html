@@ -83,6 +83,13 @@
           <span>Requirements</span>
         </div>
 
+        <a
+            class="detail-button"
+            [routerLink]="['/analyses', analysisSummary.documentId]"
+          >
+            View Full Analysis
+        </a>
+
         <div class="summary-item">
           <strong>{{ analysisSummary.taskCount }}</strong>
           <span>Development Tasks</span>
