@@ -17,7 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidDocumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleInvalidDocument(
+    public ResponseEntity<ApiErrorResponse>
+    handleInvalidDocument(
             InvalidDocumentException exception,
             HttpServletRequest request
     ) {
@@ -28,8 +29,48 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(DocumentNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleDocumentNotFound(
+            DocumentNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(AnalysisConflictException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleAnalysisConflict(
+            AnalysisConflictException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(AiAnalysisException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleAiAnalysisError(
+            AiAnalysisException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.BAD_GATEWAY,
+                exception.getMessage(),
+                request
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidationError(
+    public ResponseEntity<ApiErrorResponse>
+    handleValidationError(
             MethodArgumentNotValidException exception,
             HttpServletRequest request
     ) {
@@ -38,8 +79,11 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .findFirst()
-                .map(fieldError -> fieldError.getDefaultMessage())
-                .orElse("The request contains invalid data.");
+                .map(fieldError ->
+                        fieldError.getDefaultMessage())
+                .orElse(
+                        "The request contains invalid data."
+                );
 
         return buildResponse(
                 HttpStatus.BAD_REQUEST,
@@ -49,7 +93,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
-    public ResponseEntity<ApiErrorResponse> handleMissingRequestPart(
+    public ResponseEntity<ApiErrorResponse>
+    handleMissingRequestPart(
             MissingServletRequestPartException exception,
             HttpServletRequest request
     ) {
@@ -61,7 +106,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleUnexpectedError(
+    public ResponseEntity<ApiErrorResponse>
+    handleUnexpectedError(
             Exception exception,
             HttpServletRequest request
     ) {
@@ -77,14 +123,17 @@ public class GlobalExceptionHandler {
             String message,
             HttpServletRequest request
     ) {
-        ApiErrorResponse response = new ApiErrorResponse(
-                Instant.now(),
-                status.value(),
-                status.getReasonPhrase(),
-                message,
-                request.getRequestURI()
-        );
+        ApiErrorResponse response =
+                new ApiErrorResponse(
+                        Instant.now(),
+                        status.value(),
+                        status.getReasonPhrase(),
+                        message,
+                        request.getRequestURI()
+                );
 
-        return ResponseEntity.status(status).body(response);
+        return ResponseEntity
+                .status(status)
+                .body(response);
     }
 }
