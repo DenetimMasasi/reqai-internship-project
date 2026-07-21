@@ -1,7 +1,26 @@
 <header class="app-header">
   <div class="header-content">
-    <strong>ReqAI</strong>
-    <span>AI-Powered Requirement Decomposition</span>
+    <div class="brand">
+      <strong>ReqAI</strong>
+      <span>AI-Powered Requirement Decomposition</span>
+    </div>
+
+    <nav>
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Upload
+      </a>
+
+      <a
+        routerLink="/history"
+        routerLinkActive="active"
+      >
+        History
+      </a>
+    </nav>
   </div>
 </header>
 

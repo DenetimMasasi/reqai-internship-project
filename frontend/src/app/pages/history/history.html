@@ -1,0 +1,108 @@
+<section class="history-page">
+  <div class="page-heading">
+    <span class="eyebrow">ReqAI</span>
+    <h1>Analysis History</h1>
+    <p>View previously uploaded requirement documents.</p>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">
+      Loading analysis history...
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error-message">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (
+    !isLoading &&
+    history &&
+    history.content.length === 0
+  ) {
+    <div class="state-card">
+      No analysis records were found.
+    </div>
+  }
+
+  @if (
+    !isLoading &&
+    history &&
+    history.content.length > 0
+  ) {
+    <div class="history-list">
+      @for (
+        item of history.content;
+        track item.documentId
+      ) {
+        <article class="history-card">
+          <div class="document-info">
+            <div>
+              <h2>{{ item.fileName }}</h2>
+
+              <div class="metadata">
+                <span>Document ID: {{ item.documentId }}</span>
+
+                <span>
+                  Uploaded:
+                  {{ item.createdAt | date:'medium' }}
+                </span>
+
+                <span>
+                  Requirements:
+                  {{ item.requirementCount }}
+                </span>
+              </div>
+            </div>
+
+            <span
+              class="status-badge"
+              [class.completed]="item.status === 'COMPLETED'"
+              [class.failed]="item.status === 'FAILED'"
+            >
+              {{ item.status }}
+            </span>
+          </div>
+
+          @if (item.status === 'COMPLETED') {
+            <a
+              class="detail-link"
+              [routerLink]="[
+                '/analyses',
+                item.documentId
+              ]"
+            >
+              View Analysis
+            </a>
+          }
+        </article>
+      }
+    </div>
+
+    @if (history.totalPages > 1) {
+      <div class="pagination">
+        <button
+          type="button"
+          [disabled]="page === 0"
+          (click)="previousPage()"
+        >
+          Previous
+        </button>
+
+        <span>
+          Page {{ page + 1 }} of {{ history.totalPages }}
+        </span>
+
+        <button
+          type="button"
+          [disabled]="page >= history.totalPages - 1"
+          (click)="nextPage()"
+        >
+          Next
+        </button>
+      </div>
+    }
+  }
+</section>

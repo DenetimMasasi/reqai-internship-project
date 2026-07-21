@@ -21,3 +21,36 @@
   color: #68707c;
   font-size: 14px;
 }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.header-content {
+  justify-content: space-between;
+}
+
+nav {
+  display: flex;
+  gap: 18px;
+}
+
+nav a {
+  color: #606774;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+nav a.active {
+  color: #4f46e5;
+}
+
+@media (max-width: 650px) {
+  .header-content,
+  .brand {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
