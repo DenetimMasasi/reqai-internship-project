@@ -153,16 +153,40 @@ input[type='file'] {
     flex-direction: column;
   }
 
-  .detail-button {
-  display: block;
-  padding: 13px 18px;
-  margin-top: 20px;
-  border: 1px solid #4f46e5;
+.result-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
   border-radius: 9px;
-  color: #4f46e5;
+  background: #4f46e5;
+  color: white;
   font-weight: 600;
-  text-align: center;
   text-decoration: none;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.detail-button:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 650px) {
+  .result-actions {
+    justify-content: stretch;
+  }
+
+  .detail-button {
+    width: 100%;
+  }
 }
 
 .detail-button:hover {

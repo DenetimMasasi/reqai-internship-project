@@ -65,41 +65,48 @@
   </div>
 
   @if (analysisSummary) {
-    <div class="result-card">
-      <div class="result-heading">
-        <div>
-          <span class="eyebrow">Analysis completed</span>
-          <h2>{{ analysisSummary.fileName }}</h2>
-        </div>
-
-        <span class="status-badge">
-          {{ analysisSummary.status }}
-        </span>
+@if (analysisSummary) {
+  <div class="result-card">
+    <div class="result-heading">
+      <div>
+        <span class="eyebrow">Analysis completed</span>
+        <h2>{{ analysisSummary.fileName }}</h2>
       </div>
 
-      <div class="summary-grid">
-        <div class="summary-item">
-          <strong>{{ analysisSummary.requirementCount }}</strong>
-          <span>Requirements</span>
-        </div>
+      <span class="status-badge">
+        {{ analysisSummary.status }}
+      </span>
+    </div>
 
-        <a
-            class="detail-button"
-            [routerLink]="['/analyses', analysisSummary.documentId]"
-          >
-            View Full Analysis
-        </a>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <strong>{{ analysisSummary.requirementCount }}</strong>
+        <span>Requirements</span>
+      </div>
 
-        <div class="summary-item">
-          <strong>{{ analysisSummary.taskCount }}</strong>
-          <span>Development Tasks</span>
-        </div>
+      <div class="summary-item">
+        <strong>{{ analysisSummary.taskCount }}</strong>
+        <span>Development Tasks</span>
+      </div>
 
-        <div class="summary-item">
-          <strong>{{ analysisSummary.testScenarioCount }}</strong>
-          <span>Test Scenarios</span>
-        </div>
+      <div class="summary-item">
+        <strong>{{ analysisSummary.testScenarioCount }}</strong>
+        <span>Test Scenarios</span>
       </div>
     </div>
+
+    <div class="result-actions">
+      <a
+        class="detail-button"
+        [routerLink]="[
+          '/analyses',
+          analysisSummary.documentId
+        ]"
+      >
+        View Full Analysis →
+      </a>
+    </div>
+  </div>
+}
   }
 </section>
