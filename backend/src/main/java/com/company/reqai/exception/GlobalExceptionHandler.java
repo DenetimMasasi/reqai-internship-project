@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.company.reqai.dto.response.ApiErrorResponse;
@@ -104,6 +105,43 @@ public class GlobalExceptionHandler {
                 request
         );
     }
+        @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleInvalidRequest(
+            InvalidRequestException exception,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleTypeMismatch(
+            MethodArgumentTypeMismatchException exception,
+            HttpServletRequest request
+    ) {
+        String message;
+
+        if ("status".equals(exception.getName())) {
+            message =
+                    "Invalid status value. Supported values are "
+                    + "UPLOADED, PROCESSING, COMPLETED and FAILED.";
+        } else {
+            message =
+                    "The request contains an invalid parameter.";
+        }
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                message,
+                request
+        );
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse>
