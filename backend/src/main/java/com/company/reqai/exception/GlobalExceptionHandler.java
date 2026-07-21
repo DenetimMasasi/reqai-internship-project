@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -20,17 +21,31 @@ public class GlobalExceptionHandler {
             InvalidDocumentException exception,
             HttpServletRequest request
     ) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        ApiErrorResponse response = new ApiErrorResponse(
-                Instant.now(),
-                status.value(),
-                status.getReasonPhrase(),
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
                 exception.getMessage(),
-                request.getRequestURI()
+                request
         );
+    }
 
-        return ResponseEntity.status(status).body(response);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationError(
+            MethodArgumentNotValidException exception,
+            HttpServletRequest request
+    ) {
+        String message = exception
+                .getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(fieldError -> fieldError.getDefaultMessage())
+                .orElse("The request contains invalid data.");
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                message,
+                request
+        );
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
@@ -38,17 +53,11 @@ public class GlobalExceptionHandler {
             MissingServletRequestPartException exception,
             HttpServletRequest request
     ) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        ApiErrorResponse response = new ApiErrorResponse(
-                Instant.now(),
-                status.value(),
-                status.getReasonPhrase(),
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
                 "A requirement document must be provided.",
-                request.getRequestURI()
+                request
         );
-
-        return ResponseEntity.status(status).body(response);
     }
 
     @ExceptionHandler(Exception.class)
@@ -56,13 +65,23 @@ public class GlobalExceptionHandler {
             Exception exception,
             HttpServletRequest request
     ) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected error occurred.",
+                request
+        );
+    }
 
+    private ResponseEntity<ApiErrorResponse> buildResponse(
+            HttpStatus status,
+            String message,
+            HttpServletRequest request
+    ) {
         ApiErrorResponse response = new ApiErrorResponse(
                 Instant.now(),
                 status.value(),
                 status.getReasonPhrase(),
-                "An unexpected error occurred.",
+                message,
                 request.getRequestURI()
         );
 
